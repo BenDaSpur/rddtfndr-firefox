@@ -1,0 +1,88 @@
+<script>
+  import { currency, loading, coins, limit } from "../stores/coins.js";
+  let selected;
+
+  async function getCoins(currency, limit) {
+    $loading = true;
+    let res = await fetch(
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=${limit}}&page=1&sparkline=false`
+    );
+    if (res.ok) {
+      let data = await res.json();
+      $coins = data;
+      $loading = false;
+    }
+  }
+</script>
+
+<div class="select">
+  <!-- svelte-ignore a11y-no-onchange -->
+  <select
+    name="slct"
+    id="slct"
+    bind:value={selected}
+    on:change={() => {
+      $limit = selected;
+      getCoins($currency, $limit);
+    }}
+  >
+    <option value="10">10</option>
+    <option value="20">20</option>
+    <option value="50" selected>50</option>
+    <option value="100">100</option>
+  </select>
+</div>
+
+<style>
+  /* Reset Select */
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    outline: 0;
+    box-shadow: none;
+    border: 0 !important;
+    background: #2c3e50;
+    background-image: none;
+  }
+  /* Remove IE arrow */
+  select::-ms-expand {
+    display: none;
+  }
+  /* Custom Select */
+  .select {
+    position: relative;
+    display: flex;
+    width: 10em;
+    height: 3em;
+    line-height: 3;
+    background: #2c3e50;
+    overflow: hidden;
+    border-radius: 0.25em;
+  }
+  select {
+    flex: 1;
+    padding: 0 0.5em;
+    color: #fff;
+    cursor: pointer;
+  }
+  /* Arrow */
+  .select::after {
+    content: "\25BC";
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0 1em;
+    background: #34495e;
+    cursor: pointer;
+    pointer-events: none;
+    -webkit-transition: 0.25s all ease;
+    -o-transition: 0.25s all ease;
+    transition: 0.25s all ease;
+  }
+  /* Transition */
+  .select:hover::after {
+    color: #f39c12;
+  }
+</style>
